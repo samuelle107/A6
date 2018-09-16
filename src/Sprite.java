@@ -15,38 +15,48 @@ abstract public class Sprite
 
     abstract public boolean isMario();
 
-    boolean collisionDetection(Mario m, Sprite s)
+    boolean collisionDetection(Sprite t, Sprite o) //Target and object
     {
-        if(m.x > s.x + s.w)
+        if(t.x > o.x + o.w )
             return false;
-        if(m.x + m.w < s.x)
+        if(t.x + t.w < o.x)
             return false;
-        if(m.y > s.y + s.h)
+        if(t.y > o.y + o.h)
             return false;
-        if(m.y + m.h < s.y)
+        if(t.y + t.h < o.y)
             return false;
-
-        collisionHandler(m, s);
+        collisionHandler(t, o);
         return true;
     }
 
-    private void collisionHandler(Mario m, Sprite s)
+    private void collisionHandler(Sprite t, Sprite o)
     {
-        if(m.y <= s.y + s.h && m.prevY > s.y + s.h ) // Hits bottom
+        if(t.isMario()) //Handles collision if t is Mario
         {
-            m.y = s.y + s.h + 1;
-            m.verticalVelocity = 0;
+            Mario m = (Mario)t; //Casts t to Mario if t is Mario
+
+            if(m.y <= o.y + o.h && m.prevY > o.y + o.h) // Hits bottom
+            {
+                m.y = o.y + o.h + 1;
+                m.verticalVelocity = 0;
+            }
+            else if(m.x <= o.x + o.w && m.prevX > o.x + o.w ) //Hits right wall
+            {
+                m.x = o.x + o.w + 1;
+                Mario.scrollPos = m.x;
+            }
+            else if(m.y + m.h >= o.y && m.prevY + m.h < o.y) //Hits top wall
+            {
+                m.y = o.y - m.h - 1;
+                m.isGrounded = true;
+                m.verticalVelocity = 0.0;
+                m.marioJumpTime = 0;
+            }
+            else if(m.x + m.w >= o.x && m.prevX < o.x) //Hits left wall
+            {
+                m.x = o.x - m.w - 1;
+                Mario.scrollPos = m.x;
+            }
         }
-        else if (m.x <= s.x + s.w && m.prevX > s.x + s.w) // Hits right
-            m.x = s.x + s.w + 1;
-        else if(m.y + m.h >= s.y && m.prevY + m.h < s.y) // Lands on top
-        {
-            m.y = s.y - m.h - 1;
-            m.isGrounded = true;
-            m.verticalVelocity = 0;
-            m.marioJumpTime = 0;
-        }
-        else if (m.x + m.w >= s.x && m.prevX < s.x) // Hit left
-            m.x = s.x - m.w - 1;
     }
 }
