@@ -5,17 +5,19 @@ import java.util.Iterator;
 class View extends JPanel //The view class shows what the user will see.
 {
     //Member variables
-    Model model;
+    private Model model;
+    private Background bg;
 
     View(Controller c, Model m)
     {
         model = m;
         c.setView(this);
+        bg = new Background();
     }
 
     public void paintComponent(Graphics g)
     {
-        g.drawImage(new Background().loadImage(),-(int)(model.sprites.get(0).x * 0.1f),0,null); //Loads the background
+        g.drawImage(bg.loadImage(),-(int)(model.sprites.get(0).x * 0.1f),0,null); //Loads the background
 
         Iterator<Sprite> it = model.sprites.iterator();
         while(it.hasNext())

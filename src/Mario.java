@@ -16,8 +16,8 @@ public class Mario extends Sprite
     boolean isFacingRight; //boolean to determine if mario is facing right
     boolean canJump; //Variable that tries to prevent mario from double jumping
 
-    static BufferedImage[] marioImages;
-    static BufferedImage[] reversedMarioImages;
+    private static BufferedImage[] marioImages;
+    private static BufferedImage[] reversedMarioImages;
 
     static int scrollPos; //Static variable that keeps track of mario's position.  Allows for stationary objects to use to determine where they should be
 
@@ -35,7 +35,7 @@ public class Mario extends Sprite
         reversedMarioImages = loadMarioImages("rmario");
     }
 
-    BufferedImage[] loadMarioImages(String fileName) //Loads the mario images into a new image array and returns it
+    private BufferedImage[] loadMarioImages(String fileName) //Loads the mario images into a new image array and returns it
     {
         BufferedImage[] images = new BufferedImage[5];
 
@@ -108,10 +108,7 @@ public class Mario extends Sprite
 
     void jump(boolean longJump)
     {
-        if(verticalVelocity > 0)
-        {
-        }
-        else if(marioJumpTime < 25) //Mario can only stay in the air for so long
+        if(marioJumpTime < 25 && verticalVelocity <=0) //Mario can only stay in the air for so long
         {
             if(isGrounded)
             {

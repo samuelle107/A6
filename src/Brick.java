@@ -5,7 +5,7 @@ import java.io.File;
 
 public class Brick extends Sprite
 {
-    static BufferedImage brickImage; //Static because the image is shared between all of the objects
+    private static BufferedImage brickImage; //Static because the image is shared between all of the objects
 
     //Brick constructor
     Brick(int x, int y, int w, int h)
@@ -27,7 +27,7 @@ public class Brick extends Sprite
         return ob;
     }
 
-    //Unmarhsaling constructor.  Extracts the data from the JSON file and stores it in the member variables
+    //Un-marshaling constructor.  Extracts the data from the JSON file and stores it in the member variables
     Brick(Json ob)
     {
         x = (int)ob.getLong("x");
@@ -37,7 +37,7 @@ public class Brick extends Sprite
     }
 
     //Function to load the brick image
-    public BufferedImage loadBrickImage()
+    private BufferedImage loadBrickImage()
     {
         //Prevents the image from trying to load if it is already equal to something
         if(brickImage == null)

@@ -1,23 +1,22 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 
 class Model
 {
-     ArrayList<Sprite> sprites;
+    ArrayList<Sprite> sprites;
 
     Model()
     {
-        sprites = new ArrayList<Sprite>(); //Whenever this is called in Game.java, it will create an AL of Sprite
+        sprites = new ArrayList<>(); //Whenever this is called in Game.java, it will create an AL of Sprite
     }
 
-    public void addBrick(int x, int y, int w, int h)
+    void addBrick(int x, int y, int w, int h)
     {
         //Create a new Brick object called b and adds it to the sprites array
         Brick b = new Brick(x, y, w, h);
         sprites.add(b);
     }
 
-    public void addCoinBlock()
+    void addCoinBlock()
     {
         for(int i = 1; i <= 5; i++)
         {
@@ -26,16 +25,15 @@ class Model
         }
     }
 
-    public void deleteCoin(Sprite c, int index)
+    private void deleteCoin(Sprite c, int index)
     {
-        if(c.y > 1000)
+        if(c.y > 1500)
             sprites.remove(index);
     }
 
-    public void update()
+    void update()
     {
-        Mario m = (Mario)sprites.get(0); //Casting the first sprite (which is a mario) to a mario object
-
+        Mario m = (Mario)sprites.get(0); //Casting the first sprite (which is mario) to a mario object
         for(int i = 0; i < sprites.size(); i++)
         {
             sprites.get(i).update(); //Updates all of the sprites

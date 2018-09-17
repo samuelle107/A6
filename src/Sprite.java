@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
 
 abstract public class Sprite
 {
@@ -37,7 +36,7 @@ abstract public class Sprite
     private void collisionHandler(Sprite t, Sprite o)
     {
 
-        if(t.isMario() && !o.isCoin()) //Handles collision if t is Mario
+        if(t.isMario() && !o.isCoin()) //Handles collision if t is Mario.  Prevents mario from being hit by coins
         {
             Mario m = (Mario)t; //Casts t to Mario if t is Mario
 

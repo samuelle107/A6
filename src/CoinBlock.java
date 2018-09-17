@@ -5,12 +5,12 @@ import java.io.File;
 
 public class CoinBlock extends Sprite
 {
-    static BufferedImage coinBlockImage;
-    static BufferedImage coinBlockImageEmpty;
+    private static BufferedImage coinBlockImage;
+    private static BufferedImage coinBlockImageEmpty;
 
-    Model model;
+    private Model model;
 
-    int coinCounter;
+    private int coinCounter;
 
     CoinBlock(Model m, int x, int y)
     {
@@ -22,9 +22,9 @@ public class CoinBlock extends Sprite
         this.h = 75;
     }
 
-    public void loadImage()
+    private void loadImage()
     {
-        if(coinBlockImage == null && coinBlockImage == null)
+        if(coinBlockImage == null && coinBlockImageEmpty == null)
         {
             try
             {
@@ -39,7 +39,7 @@ public class CoinBlock extends Sprite
         }
     }
 
-    public void addCoin(int x, int y)
+    void addCoin(int x, int y)
     {
         if(coinCounter < 5)
         {

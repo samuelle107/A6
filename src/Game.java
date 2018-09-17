@@ -4,10 +4,10 @@ import java.awt.Toolkit;
 public class Game extends JFrame
 {
     //Member variables
-    Model model;
-    View view;
-    Controller controller;
-    Mario mario;
+    private Model model;
+    private View view;
+    private Controller controller;
+    private Mario mario;
 
     public Game()
     {

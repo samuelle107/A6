@@ -2,11 +2,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Background
+class Background
 {
-    BufferedImage background = null;
+    private BufferedImage background;
 
-    public BufferedImage loadImage()
+    BufferedImage loadImage()
     {
         if(background == null)
         {
