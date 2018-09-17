@@ -3,14 +3,12 @@ import java.awt.event.*;
 class Controller implements MouseListener, KeyListener
 {
     //Member variables
-    View view;
-    Model model;
-    Mario mario;
+    private View view;
+    private Model model;
+    private Mario mario;
 
     private boolean keyLeft;
     private boolean keyRight;
-    private boolean keyUp;
-    private boolean keyDown;
     private boolean keySpace;
 
     private int preXLocation; //X coordinate on mouse press
@@ -38,8 +36,6 @@ class Controller implements MouseListener, KeyListener
         {
             case KeyEvent.VK_RIGHT: keyRight = true; break;
             case KeyEvent.VK_LEFT: keyLeft = true; break;
-            case KeyEvent.VK_UP: keyUp = true; break;
-            case KeyEvent.VK_DOWN: keyDown = true; break;
             case KeyEvent.VK_L: Json j = Json.load("maps.json"); model.unMarshal(j); break;
             case KeyEvent.VK_S: model.marshal().save("maps.json"); break;
             case KeyEvent.VK_SPACE:
@@ -64,8 +60,6 @@ class Controller implements MouseListener, KeyListener
         {
             case KeyEvent.VK_RIGHT: keyRight = false; mario.marioImageIndex = 3;  break;
             case KeyEvent.VK_LEFT: keyLeft = false; mario.marioImageIndex = 3;   break;
-            case KeyEvent.VK_UP: keyUp = false; break;
-            case KeyEvent.VK_DOWN: keyDown = false; break;
             case KeyEvent.VK_SPACE: keySpace = false; mario.canJump = false; break;
         }
     }

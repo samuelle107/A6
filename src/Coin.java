@@ -16,7 +16,7 @@ public class Coin extends Sprite
         this.y = y;
         w = 75;
         h = 75;
-
+        //Gives the coin a random vertical velocity when the coin generates
         Random random = new Random();
         verticalVelocity = -(random.nextInt(20) + 5);
     }

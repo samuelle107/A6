@@ -10,7 +10,7 @@ public class CoinBlock extends Sprite
 
     private Model model;
 
-    private int coinCounter;
+    private int coinCounter; //Counts how many times mario has hit the block
 
     CoinBlock(Model m, int x, int y)
     {
@@ -41,7 +41,7 @@ public class CoinBlock extends Sprite
 
     void addCoin(int x, int y)
     {
-        if(coinCounter < 5)
+        if(coinCounter < 5) //If mario hits it 5 times, then it will stop generating coins
         {
             coinCounter++;
             Coin coin = new Coin(x, y);
@@ -56,6 +56,7 @@ public class CoinBlock extends Sprite
 
     public void draw(Graphics g)
     {
+        //Picture depends on if the block is empty or not
         if(coinCounter < 5)
             g.drawImage(coinBlockImage,x - (Mario.scrollPos - 500), y, w, h, null);
         else
