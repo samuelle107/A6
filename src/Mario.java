@@ -93,6 +93,14 @@ public class Mario extends Sprite
         return true;
     }
 
+    public boolean isCoinBlock() {
+        return false;
+    }
+
+    public boolean isCoin() {
+        return false;
+    }
+
     public boolean isBrick()
     {
         return false;

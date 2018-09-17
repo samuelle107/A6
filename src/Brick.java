@@ -70,6 +70,14 @@ public class Brick extends Sprite
         return false;
     }
 
+    public boolean isCoinBlock() {
+        return false;
+    }
+
+    public boolean isCoin() {
+        return false;
+    }
+
     public boolean isBrick()
     {
         return true;

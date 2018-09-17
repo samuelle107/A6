@@ -3,7 +3,7 @@ import java.util.Iterator;
 
 class Model
 {
-    ArrayList<Sprite> sprites; //ArrayList of sprites
+     ArrayList<Sprite> sprites;
 
     Model()
     {
@@ -17,21 +17,37 @@ class Model
         sprites.add(b);
     }
 
-    public void update()
+    public void addCoinBlock()
     {
-        Mario mario = (Mario)sprites.get(0); //Casting the first sprite (which is a mario) to a mario object
-
-        Iterator<Sprite> it = sprites.iterator();
-        while(it.hasNext())
+        for(int i = 1; i <= 5; i++)
         {
-            Sprite s = it.next();
-            s.update();
-            if(!s.isMario()) // Checks collision on not mario objects
-                s.collisionDetection(mario,s);
+            CoinBlock coinBlock = new CoinBlock(this,700* i, 350);
+            sprites.add(coinBlock);
         }
     }
 
-    //Marshall Method
+    public void deleteCoin(Sprite c, int index)
+    {
+        if(c.y > 1000)
+            sprites.remove(index);
+    }
+
+    public void update()
+    {
+        Mario m = (Mario)sprites.get(0); //Casting the first sprite (which is a mario) to a mario object
+
+        for(int i = 0; i < sprites.size(); i++)
+        {
+            sprites.get(i).update(); //Updates all of the sprites
+
+            if(!sprites.get(i).isMario()) //Collision logic for mario and an object
+                sprites.get(i).collisionDetection(m,sprites.get(i));
+
+            if(sprites.get(i).isCoin()) //Handles coin deletion
+                deleteCoin(sprites.get(i),i);
+        }
+    }
+
     Json marshal()
     {
         Json ob = Json.newObject();
@@ -49,7 +65,6 @@ class Model
         return ob;
         }
 
-    //Unmarshal method
     void unMarshal (Json ob)
     {
         for(int i = sprites.size() -1; i > 0; i--) //deletes all of the current bricks that are loaded in the game.  Does not clear Mario

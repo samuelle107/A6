@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 abstract public class Sprite
 {
@@ -14,6 +15,10 @@ abstract public class Sprite
     abstract public boolean isBrick();
 
     abstract public boolean isMario();
+
+    abstract public boolean isCoinBlock();
+
+    abstract public boolean isCoin();
 
     boolean collisionDetection(Sprite t, Sprite o) //Target and object
     {
@@ -31,12 +36,16 @@ abstract public class Sprite
 
     private void collisionHandler(Sprite t, Sprite o)
     {
-        if(t.isMario()) //Handles collision if t is Mario
+
+        if(t.isMario() && !o.isCoin()) //Handles collision if t is Mario
         {
             Mario m = (Mario)t; //Casts t to Mario if t is Mario
 
             if(m.y <= o.y + o.h && m.prevY > o.y + o.h) // Hits bottom
             {
+                if(o.isCoinBlock()) //If the object that the target hit was a CoinBlock, then it will generate a coin
+                    generateCoin(o);
+
                 m.y = o.y + o.h + 1;
                 m.verticalVelocity = 0;
             }
@@ -58,5 +67,10 @@ abstract public class Sprite
                 Mario.scrollPos = m.x;
             }
         }
+    }
+
+    private void generateCoin(Sprite cb)
+    {
+        ((CoinBlock) cb).addCoin(cb.x, cb.y - 75);
     }
 }
