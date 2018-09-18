@@ -20,14 +20,15 @@ class Model
     {
         for(int i = 1; i <= 5; i++)
         {
-            CoinBlock coinBlock = new CoinBlock(this,700* i, 350);
+            CoinBlock coinBlock = new CoinBlock(700* i, 350); //Spaces out the coin blocks every 700 pixels
             sprites.add(coinBlock);
         }
     }
 
+
     private void deleteCoin(Sprite c, int index)
     {
-        if(c.y > 1500)
+        if(c.y > 1500) //y =1500 is off the screen, so once it gets there, remove the coin from the arrayList
             sprites.remove(index);
     }
 
@@ -39,7 +40,7 @@ class Model
             sprites.get(i).update(); //Updates all of the sprites
 
             if(!sprites.get(i).isMario()) //Collision logic for mario and an object
-                sprites.get(i).collisionDetection(m,sprites.get(i));
+                sprites.get(i).collisionDetection(this, m, sprites.get(i));
 
             if(sprites.get(i).isCoin()) //Handles coin deletion
                 deleteCoin(sprites.get(i),i);
@@ -50,7 +51,10 @@ class Model
     {
         Json ob = Json.newObject();
         Json brickList = Json.newList();
+        Json coinBlockList = Json.newList();
+
         ob.add("bricks", brickList);
+        ob.add("coinblock", coinBlockList);
 
         for(int i = 0; i < sprites.size(); i++)
         {
@@ -58,6 +62,11 @@ class Model
             {
                 Brick brick = (Brick)sprites.get(i); //Casts the brick sprite to a brick
                 brickList.add(brick.marshal());
+            }
+            else if(sprites.get(i).isCoinBlock())
+            {
+                CoinBlock coinBlock = (CoinBlock)sprites.get(i);
+                coinBlockList.add(coinBlock.marshal());
             }
         }
         return ob;
@@ -67,8 +76,14 @@ class Model
     {
         for(int i = sprites.size() -1; i > 0; i--) //deletes all of the current bricks that are loaded in the game.  Does not clear Mario
             sprites.remove(i);
-        Json jsonList = ob.get("bricks"); //Creating a Json object that targets bricks
-        for(int i = 0; i <jsonList.size(); i++)  //Goes through the json object and adds all of the bricks to the sprite arrayList
-            sprites.add(new Brick(jsonList.get(i)));
+
+        Json jsonBrickList = ob.get("bricks"); //Creating a Json object that targets bricks
+        Json jsonCoinBlockList = ob.get("coinblock"); //Creating a Json object that targets coinblock
+
+        for(int i = 0; i <jsonBrickList.size(); i++)  //Goes through the json object and adds all of the bricks to the sprite arrayList
+            sprites.add(new Brick(jsonBrickList.get(i))); //
+
+        for(int i = 0; i < jsonCoinBlockList.size(); i++)
+            sprites.add(new CoinBlock(jsonCoinBlockList.get(i)));
     }
 }

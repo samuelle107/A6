@@ -9,6 +9,7 @@ public class Coin extends Sprite
     private BufferedImage coinImage;
 
     private double verticalVelocity;
+    private double horizontalVelocity;
 
     Coin(int x, int y)
     {
@@ -18,7 +19,8 @@ public class Coin extends Sprite
         h = 75;
         //Gives the coin a random vertical velocity when the coin generates
         Random random = new Random();
-        verticalVelocity = -(random.nextInt(20) + 5);
+        verticalVelocity = -15;
+        horizontalVelocity = random.nextInt(10 + 1 + 10) - 10;
     }
 
     private BufferedImage loadImage()
@@ -42,6 +44,8 @@ public class Coin extends Sprite
     {
         verticalVelocity += 1.2;
         this.y += verticalVelocity;
+
+        x += horizontalVelocity;
     }
 
     public void draw(Graphics g)

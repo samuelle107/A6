@@ -8,18 +8,35 @@ public class CoinBlock extends Sprite
     private static BufferedImage coinBlockImage;
     private static BufferedImage coinBlockImageEmpty;
 
-    private Model model;
+    int coinCounter; //Counts how many times mario has hit the block
 
-    private int coinCounter; //Counts how many times mario has hit the block
-
-    CoinBlock(Model m, int x, int y)
+    CoinBlock(int x, int y)
     {
-        model = m;
         loadImage();
         this.x = x;
         this.y = y;
         this.w = 75;
         this.h = 75;
+    }
+
+    // Marshals this object into a JSON DOM
+    Json marshal()
+    {
+        Json ob = Json.newObject(); //Makes a new JSON file and adds the parameters of the coinBLock to it
+        ob.add("x", x);
+        ob.add("y", y);
+        ob.add("w", w);
+        ob.add("h", h);
+        return ob;
+    }
+
+    //Un-marshaling constructor.  Extracts the data from the JSON file and stores it in the member variables
+    CoinBlock(Json ob)
+    {
+        x = (int)ob.getLong("x");
+        y = (int)ob.getLong("y");
+        w = (int)ob.getLong("w");
+        h = (int)ob.getLong("h");
     }
 
     private void loadImage()
@@ -39,13 +56,13 @@ public class CoinBlock extends Sprite
         }
     }
 
-    void addCoin(int x, int y)
+    void addCoin(Model m, int x, int y)
     {
         if(coinCounter < 5) //If mario hits it 5 times, then it will stop generating coins
         {
             coinCounter++;
             Coin coin = new Coin(x, y);
-            model.sprites.add(coin);
+            m.sprites.add(coin);
         }
     }
 

@@ -19,7 +19,7 @@ abstract public class Sprite
 
     abstract public boolean isCoin();
 
-    boolean collisionDetection(Sprite t, Sprite o) //Target and object
+    boolean collisionDetection(Model model, Sprite t, Sprite o) //Model, Target and object  Model is passed through for unmarshalling
     {
         if(t.x > o.x + o.w )
             return false;
@@ -29,11 +29,11 @@ abstract public class Sprite
             return false;
         if(t.y + t.h < o.y)
             return false;
-        collisionHandler(t, o);
+        collisionHandler(model, t, o); //Goes through this function if and only if it detects intersection
         return true;
     }
 
-    private void collisionHandler(Sprite t, Sprite o)
+    private void collisionHandler(Model model, Sprite t, Sprite o)
     {
 
         if(t.isMario() && !o.isCoin()) //Handles collision if t is Mario.  Prevents mario from being hit by coins
@@ -43,7 +43,7 @@ abstract public class Sprite
             if(m.y <= o.y + o.h && m.prevY > o.y + o.h) // Hits bottom
             {
                 if(o.isCoinBlock()) //If the object that the target hit was a CoinBlock, then it will generate a coin
-                    generateCoin(o);
+                    generateCoin(model, o);
 
                 m.y = o.y + o.h + 1;
                 m.verticalVelocity = 0;
@@ -68,8 +68,8 @@ abstract public class Sprite
         }
     }
 
-    private void generateCoin(Sprite cb)
+    private void generateCoin(Model model, Sprite cb)
     {
-        ((CoinBlock) cb).addCoin(cb.x, cb.y - 75);
+        ((CoinBlock) cb).addCoin(model, cb.x, cb.y - 75); //adds a coin at the location of the coin block and shifts up
     }
 }
