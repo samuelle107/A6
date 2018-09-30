@@ -14,9 +14,10 @@ public class Game extends JFrame
         mario = new Mario();
         model = new Model(); //Making a new Model object.
         model.sprites.add(mario); //Adds Mario to the sprite arrayList.  Makes sure that the first object in the arraylist is Mario
-        controller = new Controller(model, mario); //Making a new Controller object.
+        controller = new Controller(model); //Making a new Controller object.
         model.addCoinBlock();
         view = new View(controller, model); //Making a View object and passing in the Controller object, controller.
+        Json j = Json.load("maps.json"); model.unMarshal(j); //Loads the game
 
         //"this" refers to the current object.
         view.addMouseListener(controller);

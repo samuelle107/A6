@@ -35,6 +35,14 @@ public class Mario extends Sprite
         reversedMarioImages = loadMarioImages("rmario");
     }
 
+    Mario(Json ob)
+    {
+        x = (int)ob.getLong("x");
+        y = (int)ob.getLong("y");
+        w = (int)ob.getLong("w");
+        h = (int)ob.getLong("h");
+    }
+
     private BufferedImage[] loadMarioImages(String fileName) //Loads the mario images into a new image array and returns it
     {
         BufferedImage[] images = new BufferedImage[5];
@@ -88,24 +96,6 @@ public class Mario extends Sprite
             g.drawImage(reversedMarioImages[marioImageIndex],500,y,null);
     }
 
-    public boolean isMario()
-    {
-        return true;
-    }
-
-    public boolean isCoinBlock() {
-        return false;
-    }
-
-    public boolean isCoin() {
-        return false;
-    }
-
-    public boolean isBrick()
-    {
-        return false;
-    }
-
     void jump(boolean longJump)
     {
         if(marioJumpTime < 25 && verticalVelocity <=0) //Mario can only stay in the air for so long
@@ -138,5 +128,23 @@ public class Mario extends Sprite
             marioImageIndex++;
         else
             marioImageIndex = 0;
+    }
+
+    public boolean isMario()
+    {
+        return true;
+    }
+
+    public boolean isCoinBlock() {
+        return false;
+    }
+
+    public boolean isCoin() {
+        return false;
+    }
+
+    public boolean isBrick()
+    {
+        return false;
     }
 }

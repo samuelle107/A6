@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 class Model
 {
-    ArrayList<Sprite> sprites;
+    static ArrayList<Sprite> sprites;
 
     Model()
     {
@@ -18,13 +19,16 @@ class Model
 
     void addCoinBlock()
     {
-        for(int i = 1; i <= 5; i++)
+        for(int i = 1; i <= 10; i++)
         {
-            CoinBlock coinBlock = new CoinBlock(700* i, 350); //Spaces out the coin blocks every 700 pixels
+            Random random = new Random();
+            int x = random.nextInt(3000) + 500;
+            int y = random.nextInt(300) + 200;
+
+            CoinBlock coinBlock = new CoinBlock(x, 500 - y); //Spaces out the coin blocks every 700 pixels
             sprites.add(coinBlock);
         }
     }
-
 
     private void deleteCoin(Sprite c, int index)
     {
@@ -34,31 +38,35 @@ class Model
 
     void update()
     {
-        Mario m = (Mario)sprites.get(0); //Casting the first sprite (which is mario) to a mario object
         for(int i = 0; i < sprites.size(); i++)
         {
-            sprites.get(i).update(); //Updates all of the sprites
+            sprites.get(i).update();
+            sprites.get(i).collisionDetection(this, sprites);
 
-            if(!sprites.get(i).isMario()) //Collision logic for mario and an object
-                sprites.get(i).collisionDetection(this, m, sprites.get(i));
-
-            if(sprites.get(i).isCoin()) //Handles coin deletion
+            if(sprites.get(i).isCoin())
                 deleteCoin(sprites.get(i),i);
         }
     }
 
-    Json marshal()
+    Json marshall()
     {
         Json ob = Json.newObject();
         Json brickList = Json.newList();
         Json coinBlockList = Json.newList();
+        Json marioList = Json.newList();
 
+        ob.add("mario", marioList);
         ob.add("bricks", brickList);
-        ob.add("coinblock", coinBlockList);
+        ob.add("coinblocks", coinBlockList);
 
         for(int i = 0; i < sprites.size(); i++)
         {
-            if(sprites.get(i).isBrick()) //Checks the sprite arrayList if the index is a brick
+            if(sprites.get(i).isMario())
+            {
+                Mario mario = (Mario)sprites.get(i);
+                marioList.add(mario.marshal());
+            }
+            else if(sprites.get(i).isBrick()) //Checks the sprite arrayList if the index is a brick
             {
                 Brick brick = (Brick)sprites.get(i); //Casts the brick sprite to a brick
                 brickList.add(brick.marshal());
@@ -70,17 +78,20 @@ class Model
             }
         }
         return ob;
-        }
+    }
 
     void unMarshal (Json ob)
     {
-        for(int i = sprites.size() -1; i > 0; i--) //deletes all of the current bricks that are loaded in the game.  Does not clear Mario
-            sprites.remove(i);
+        sprites.clear();
 
-        Json jsonBrickList = ob.get("bricks"); //Creating a Json object that targets bricks
-        Json jsonCoinBlockList = ob.get("coinblock"); //Creating a Json object that targets coinblock
+        Json jsonMarioList = ob.get("mario");
+        Json jsonBrickList = ob.get("bricks");
+        Json jsonCoinBlockList = ob.get("coinblocks");
 
-        for(int i = 0; i <jsonBrickList.size(); i++)  //Goes through the json object and adds all of the bricks to the sprite arrayList
+        for(int i = 0; i < jsonMarioList.size(); i++)
+            sprites.add(new Mario(jsonMarioList.get(i)));
+
+        for(int i = 0; i <jsonBrickList.size(); i++)
             sprites.add(new Brick(jsonBrickList.get(i))); //
 
         for(int i = 0; i < jsonCoinBlockList.size(); i++)

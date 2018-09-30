@@ -5,7 +5,6 @@ class Controller implements MouseListener, KeyListener
     //Member variables
     private View view;
     private Model model;
-    private Mario mario;
 
     private boolean keyLeft;
     private boolean keyRight;
@@ -16,11 +15,9 @@ class Controller implements MouseListener, KeyListener
     private int postXLocation; //X coordinate on mouse release
     private int postYLocation; //Y coordinate on mouse release
 
-
-    Controller(Model m, Mario ma) //Constructor
+    Controller(Model m) //Constructor
     {
         model = m; //I pass in the model object to this constructor and call it "m".  It is then assigned to model in this class.
-        mario = ma;
     }
 
     void setView(View v)
@@ -30,14 +27,13 @@ class Controller implements MouseListener, KeyListener
 
     public void keyPressed(KeyEvent e)
     {
-         //Movement speed of the camera
-
+        Mario mario = (Mario)model.sprites.get(0);
         switch(e.getKeyCode())
         {
             case KeyEvent.VK_RIGHT: keyRight = true; break;
             case KeyEvent.VK_LEFT: keyLeft = true; break;
             case KeyEvent.VK_L: Json j = Json.load("maps.json"); model.unMarshal(j); break;
-            case KeyEvent.VK_S: model.marshal().save("maps.json"); break;
+            case KeyEvent.VK_S: model.marshall().save("maps.json"); break;
             case KeyEvent.VK_SPACE:
             {
                 keySpace = true;
@@ -48,14 +44,14 @@ class Controller implements MouseListener, KeyListener
                     else if (mario.marioJumpTime > 2) //Long jump
                         mario.jump(true);
                 }
-
-
-            } break;
+            }
+            break;
         }
     }
 
     public void keyReleased(KeyEvent e)
     {
+        Mario mario = (Mario)model.sprites.get(0);
         switch(e.getKeyCode())
         {
             case KeyEvent.VK_RIGHT: keyRight = false; mario.marioImageIndex = 3;  break;
@@ -71,6 +67,8 @@ class Controller implements MouseListener, KeyListener
 
     void update() //This function updates every few ms and updates the model's location based on the keypress
     {
+        Mario mario = (Mario)model.sprites.get(0);
+
         mario.locationOfMarioPast(); //Gets the 'current' position of mario and stores it in the 'previous' variables
 
         if(mario.isGrounded)
@@ -100,6 +98,7 @@ class Controller implements MouseListener, KeyListener
 
     public void mouseReleased(MouseEvent e)
     {
+        Mario mario = (Mario)model.sprites.get(0);
         int xFinal; //The final value for the x coordinate
         int yFinal; //The final value for the y coordinate
         int w; //Magnitude of the difference of the pre and post x coordinates

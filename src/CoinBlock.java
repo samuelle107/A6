@@ -19,18 +19,6 @@ public class CoinBlock extends Sprite
         this.h = 75;
     }
 
-    // Marshals this object into a JSON DOM
-    Json marshal()
-    {
-        Json ob = Json.newObject(); //Makes a new JSON file and adds the parameters of the coinBLock to it
-        ob.add("x", x);
-        ob.add("y", y);
-        ob.add("w", w);
-        ob.add("h", h);
-        return ob;
-    }
-
-    //Un-marshaling constructor.  Extracts the data from the JSON file and stores it in the member variables
     CoinBlock(Json ob)
     {
         x = (int)ob.getLong("x");

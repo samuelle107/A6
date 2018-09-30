@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 abstract public class Sprite
 {
@@ -8,61 +9,74 @@ abstract public class Sprite
     int h;
 
     abstract public void update();
-
     abstract public void draw(Graphics g);
-
     abstract public boolean isBrick();
-
     abstract public boolean isMario();
-
     abstract public boolean isCoinBlock();
-
     abstract public boolean isCoin();
 
-    boolean collisionDetection(Model model, Sprite t, Sprite o) //Model, Target and object  Model is passed through for unmarshalling
+    // Marshals this object into a JSON DOM
+    Json marshal()
     {
-        if(t.x > o.x + o.w )
-            return false;
-        if(t.x + t.w < o.x)
-            return false;
-        if(t.y > o.y + o.h)
-            return false;
-        if(t.y + t.h < o.y)
-            return false;
-        collisionHandler(model, t, o); //Goes through this function if and only if it detects intersection
+        Json ob = Json.newObject(); //Makes a new JSON file and adds the parameters of the bricks to it
+        ob.add("x", x);
+        ob.add("y", y);
+        ob.add("w", w);
+        ob.add("h", h);
+        return ob;
+    }
+
+    boolean collisionDetection(Model model, ArrayList<Sprite> sprites) //Model, Target and object  Model is passed through for unmarshalling
+    {
+        for(int i = 0; i < sprites.size(); i++)
+        {
+            if(this != sprites.get(i))
+            {
+                if(this.x > sprites.get(i).x + sprites.get(i).w)
+                    return false;
+                if(this.x + this.w < sprites.get(i).x)
+                    return false;
+                if(this.y > sprites.get(i).y + sprites.get(i).h)
+                    return false;
+                if(this.y + this.h < sprites.get(i).y)
+                    return false;
+
+                collisionHandler(model, sprites.get(i)); //Goes through this function if and only if it detects intersection
+                return true;
+            }
+        }
         return true;
     }
 
-    private void collisionHandler(Model model, Sprite t, Sprite o)
+    private void collisionHandler(Model model, Sprite sprite) // "This" will refer to what ever the sprite is hitting
     {
-
-        if(t.isMario() && !o.isCoin()) //Handles collision if t is Mario.  Prevents mario from being hit by coins
+        if(sprite.isMario() && !this.isCoin())
         {
-            Mario m = (Mario)t; //Casts t to Mario if t is Mario
+            Mario m = (Mario)sprite;
 
-            if(m.y <= o.y + o.h && m.prevY > o.y + o.h) // Hits bottom
+            if(m.y <= this.y + this.h && m.prevY > this.y + this.h) // Hits bottom
             {
-                if(o.isCoinBlock()) //If the object that the target hit was a CoinBlock, then it will generate a coin
-                    generateCoin(model, o);
+                if(this.isCoinBlock())
+                    generateCoin(model,this);
 
-                m.y = o.y + o.h + 1;
+                m.y = this.y + this.h + 1;
                 m.verticalVelocity = 0;
             }
-            else if(m.x <= o.x + o.w && m.prevX > o.x + o.w ) //Hits right wall
+            else if (m.x <= this.x + this.w && m.prevX > this.x + this.w) // Hits right wall
             {
-                m.x = o.x + o.w + 1;
+                m.x = this.x + this.w + 1;
                 Mario.scrollPos = m.x;
             }
-            else if(m.y + m.h >= o.y && m.prevY + m.h < o.y) //Hits top wall
+            else if(m.y + m.h >= this.y && m.prevY + m.h < this.y) // Lands on top
             {
-                m.y = o.y - m.h - 1;
+                m.y = this.y - m.h - 1;
                 m.isGrounded = true;
                 m.verticalVelocity = 0.0;
                 m.marioJumpTime = 0;
             }
-            else if(m.x + m.w >= o.x && m.prevX < o.x) //Hits left wall
+            else if(m.x + m.w >= this.x && m.prevX < this.x) // Hits left wall
             {
-                m.x = o.x - m.w - 1;
+                m.x = this.x - m.w - 1;
                 Mario.scrollPos = m.x;
             }
         }
