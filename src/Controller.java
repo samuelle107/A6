@@ -1,3 +1,6 @@
+import com.sun.org.apache.xpath.internal.operations.Mod;
+
+import javax.jws.WebParam;
 import java.awt.event.*;
 
 class Controller implements MouseListener, KeyListener
@@ -5,10 +8,12 @@ class Controller implements MouseListener, KeyListener
     //Member variables
     private View view;
     private Model model;
+    Mario mario;
 
     private boolean keyLeft;
     private boolean keyRight;
     private boolean keySpace;
+    private boolean coinBlockSwitch;
 
     private int preXLocation; //X coordinate on mouse press
     private int preYLocation; //Y coordinate on mouse press
@@ -18,6 +23,7 @@ class Controller implements MouseListener, KeyListener
     Controller(Model m) //Constructor
     {
         model = m; //I pass in the model object to this constructor and call it "m".  It is then assigned to model in this class.
+        this.mario = model.mario;
     }
 
     void setView(View v)
@@ -27,23 +33,20 @@ class Controller implements MouseListener, KeyListener
 
     public void keyPressed(KeyEvent e)
     {
-        Mario mario = (Mario)model.sprites.get(0);
         switch(e.getKeyCode())
         {
             case KeyEvent.VK_RIGHT: keyRight = true; break;
             case KeyEvent.VK_LEFT: keyLeft = true; break;
             case KeyEvent.VK_L: Json j = Json.load("maps.json"); model.unMarshal(j); break;
             case KeyEvent.VK_S: model.marshall().save("maps.json"); break;
+            case KeyEvent.VK_C: coinBlockSwitch = !coinBlockSwitch; break;
             case KeyEvent.VK_SPACE:
             {
                 keySpace = true;
-                if(mario.canJump)
-                {
-                    if(mario.marioJumpTime  == 0) //Short jump
-                        mario.jump(false);
-                    else if (mario.marioJumpTime > 2) //Long jump
-                        mario.jump(true);
-                }
+                if(mario.marioJumpTime  == 0) //Short jump
+                    mario.jump();
+                else if (mario.marioJumpTime > 2) //Long jump
+                    mario.jump();
             }
             break;
         }
@@ -51,12 +54,11 @@ class Controller implements MouseListener, KeyListener
 
     public void keyReleased(KeyEvent e)
     {
-        Mario mario = (Mario)model.sprites.get(0);
         switch(e.getKeyCode())
         {
             case KeyEvent.VK_RIGHT: keyRight = false; mario.marioImageIndex = 3;  break;
             case KeyEvent.VK_LEFT: keyLeft = false; mario.marioImageIndex = 3;   break;
-            case KeyEvent.VK_SPACE: keySpace = false; mario.canJump = false; break;
+            case KeyEvent.VK_SPACE: keySpace = false; break;
         }
     }
 
@@ -65,14 +67,43 @@ class Controller implements MouseListener, KeyListener
 
     }
 
+    private void evaluateBest()
+    {
+        if(false)
+        {
+            // Evaluate each possible action
+            double score_run          = model.evaluateAction(Model.marioActions.RUN, 0);
+            double score_jump         = model.evaluateAction(Model.marioActions.JUMP, 0);
+            double score_wait         = model.evaluateAction(Model.marioActions.WAIT, 0);
+            double score_run_and_jump = model.evaluateAction(Model.marioActions.RUN_AND_JUMP, 0);
+
+            System.out.println("r  : " + score_run);
+            System.out.println("j  : " + score_jump);
+//            System.out.println("w  : " + score_wait);
+//            System.out.println("rj : " + score_run_and_jump);
+            System.out.println();
+
+//            if(score_run > score_jump && score_run > score_wait && score_run > score_run_and_jump)
+//                model.doAction(Model.marioActions.RUN);
+//            else if(score_jump > score_wait && score_jump > score_run_and_jump)
+//                model.doAction(Model.marioActions.JUMP);
+//            else if(score_wait > score_run_and_jump)
+//                model.doAction(Model.marioActions.WAIT);
+//            else
+//                model.doAction(Model.marioActions.RUN_AND_JUMP);
+
+            if(score_run > score_jump && score_run > score_run_and_jump)
+                model.doAction(Model.marioActions.RUN);
+            else if(score_run_and_jump > score_jump)
+                model.doAction(Model.marioActions.RUN_AND_JUMP);
+            else
+                model.doAction(Model.marioActions.JUMP);
+        }
+    }
+
     void update() //This function updates every few ms and updates the model's location based on the keypress
     {
-        Mario mario = (Mario)model.sprites.get(0);
-
         mario.locationOfMarioPast(); //Gets the 'current' position of mario and stores it in the 'previous' variables
-
-        if(mario.isGrounded)
-            mario.canJump = true;
 
         //Handles Mario's movement and stores mario's new location in the current variables
         if(keyLeft)
@@ -87,6 +118,8 @@ class Controller implements MouseListener, KeyListener
             mario.marioImageCycle();
             mario.x += mario.marioMovementSpeed;
         }
+
+        evaluateBest();
     }
 
     public void mousePressed(MouseEvent e)
@@ -98,7 +131,6 @@ class Controller implements MouseListener, KeyListener
 
     public void mouseReleased(MouseEvent e)
     {
-        Mario mario = (Mario)model.sprites.get(0);
         int xFinal; //The final value for the x coordinate
         int yFinal; //The final value for the y coordinate
         int w; //Magnitude of the difference of the pre and post x coordinates
@@ -139,7 +171,10 @@ class Controller implements MouseListener, KeyListener
                 yFinal = postYLocation;
             }
         }
-        model.addBrick(xFinal + (mario.x - 500), yFinal,w,h); //Adds the tube to the array
+        if(coinBlockSwitch)
+            model.addCoinBlock(xFinal + (mario.x - 500), yFinal,w,h); //Adds the tube to the array
+        else
+            model.addBrick(xFinal + (mario.x - 500), yFinal,w,h); //Adds the tube to the array
     }
 
     public void mouseEntered(MouseEvent e)

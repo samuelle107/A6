@@ -14,17 +14,14 @@ public class Mario extends Sprite
     double verticalVelocity;
     boolean isGrounded;
     boolean isFacingRight; //boolean to determine if mario is facing right
-    boolean canJump; //Variable that tries to prevent mario from double jumping
 
     private static BufferedImage[] marioImages;
     private static BufferedImage[] reversedMarioImages;
 
-    static int scrollPos; //Static variable that keeps track of mario's position.  Allows for stationary objects to use to determine where they should be
-
-    Mario()
+    Mario(int x, int y) // Normal constructor
     {
-        x = 500;
-        y = 500; //Initializes mario to be at y = 500
+        this.x = x;
+        this.y = y;
         w = 60;
         h = 95;
         marioImageIndex = 0;
@@ -35,12 +32,38 @@ public class Mario extends Sprite
         reversedMarioImages = loadMarioImages("rmario");
     }
 
-    Mario(Json ob)
+    Mario(Mario copyMario)
+    {
+        this.x = copyMario.x;
+        this.y = copyMario.y;
+        this.w = copyMario.y;
+        this.h = copyMario.h;
+
+        this.prevX = copyMario.prevX;
+        this.prevY = copyMario.prevY;
+
+        this.marioImageIndex = copyMario.marioImageIndex;
+        this.marioJumpTime = copyMario.marioJumpTime;
+        this.verticalVelocity = copyMario.verticalVelocity;
+        this.isGrounded = copyMario.isGrounded;
+        this.isFacingRight = copyMario.isFacingRight;
+    }
+
+    @Override
+    public Sprite clone(Model m, Sprite s)
+    {
+        return (new Mario((Mario)s));
+    }
+
+    Mario(Model model, Json ob)
     {
         x = (int)ob.getLong("x");
         y = (int)ob.getLong("y");
         w = (int)ob.getLong("w");
         h = (int)ob.getLong("h");
+        marioImageIndex = 0;
+        isFacingRight = true;
+        isGrounded = true;
     }
 
     private BufferedImage[] loadMarioImages(String fileName) //Loads the mario images into a new image array and returns it
@@ -85,7 +108,6 @@ public class Mario extends Sprite
             isGrounded = false;
             marioJumpTime++; //Counts how many frames mario has been in the air
         }
-        scrollPos = x;
     }
 
     public void draw(Graphics g)
@@ -96,22 +118,18 @@ public class Mario extends Sprite
             g.drawImage(reversedMarioImages[marioImageIndex],500,y,null);
     }
 
-    void jump(boolean longJump)
+    void jump()
     {
+
         if(marioJumpTime < 25 && verticalVelocity <=0) //Mario can only stay in the air for so long
         {
             if(isGrounded)
             {
-                if(!longJump)
+                if(true)
                 {
                     locationOfMarioPast();
                     verticalVelocity = -23;
                 }
-            }
-            else if(longJump)
-            {
-                locationOfMarioPast();
-                verticalVelocity = -9;
             }
         }
     }
@@ -130,21 +148,4 @@ public class Mario extends Sprite
             marioImageIndex = 0;
     }
 
-    public boolean isMario()
-    {
-        return true;
-    }
-
-    public boolean isCoinBlock() {
-        return false;
-    }
-
-    public boolean isCoin() {
-        return false;
-    }
-
-    public boolean isBrick()
-    {
-        return false;
-    }
 }

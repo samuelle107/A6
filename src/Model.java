@@ -3,31 +3,113 @@ import java.util.Random;
 
 class Model
 {
-    static ArrayList<Sprite> sprites;
+    int coins;
+    int jumpCount;
 
-    Model()
+    ArrayList<Sprite> sprites;
+    Mario mario;
+
+    public enum marioActions{ RUN, JUMP, RUN_AND_JUMP, WAIT }
+
+    Model() // Normal constructor
     {
-        sprites = new ArrayList<>(); //Whenever this is called in Game.java, it will create an AL of Sprite
+        this.mario = new Mario(500, 500);
+        this.sprites = new ArrayList<>();
+        this.sprites.add(mario);
+    }
+
+    Model(Model copyModel) // Copy Constructor
+    {
+        this.coins = copyModel.coins;
+        this.jumpCount = copyModel.jumpCount;
+
+        this.sprites = new ArrayList<>();
+        for(Sprite s : copyModel.sprites)
+            this.sprites.add(s.clone(this, s));
+
+        this.mario = (Mario)this.sprites.get(0);
+    }
+
+    double evaluateAction(marioActions action, int depth)
+    {
+        int d = 20;
+        int k = 7;
+
+        // Evaluate the state
+        if(depth >= d)
+            return this.mario.x - this.jumpCount + (coins * 100);
+
+        // Simulate the action
+        Model copy = new Model(this); // uses the copy constructor
+        copy.doAction(action);
+        copy.update(); // advance simulated time
+
+        // Recurse
+        if(depth % k != 0)
+            return copy.evaluateAction(action, depth + 1);
+        else
+        {
+            double best = copy.evaluateAction(marioActions.RUN, depth + 1);
+            best = Math.max(best, copy.evaluateAction(marioActions.JUMP, depth + 1));
+            best = Math.max(best, copy.evaluateAction(marioActions.WAIT, depth + 1));
+            best = Math.max(best, copy.evaluateAction(marioActions.RUN_AND_JUMP, depth + 1));
+            return best;
+        }
+    }
+
+    void doAction(marioActions action)
+    {
+        switch (action)
+        {
+            case JUMP:
+            {
+                this.mario.jump();
+                this.jumpCount++;
+                break;
+            }
+            case WAIT:
+            {
+                this.mario.isGrounded = true;
+                this.mario.x = this.mario.prevX;
+                break;
+            }
+            case RUN:
+            {
+                if(this.mario.isGrounded)
+                {
+                    this.mario.x += this.mario.marioMovementSpeed;
+                    this.mario.isFacingRight = true;
+                    this.mario.marioImageCycle();
+                }
+                break;
+            }
+            case RUN_AND_JUMP:
+            {
+                this.mario.x += this.mario.marioMovementSpeed;
+                this.mario.jump();
+                this.mario.marioImageCycle();
+                this.jumpCount++;
+                break;
+            }
+            default:
+            {
+                throw new RuntimeException("There are no cases where this should happen");
+            }
+
+        }
     }
 
     void addBrick(int x, int y, int w, int h)
     {
         //Create a new Brick object called b and adds it to the sprites array
-        Brick b = new Brick(x, y, w, h);
+        Brick b = new Brick(this, x, y, w, h);
         sprites.add(b);
     }
 
-    void addCoinBlock()
+    void addCoinBlock(int x, int y, int w, int h)
     {
-        for(int i = 1; i <= 10; i++)
-        {
-            Random random = new Random();
-            int x = random.nextInt(3000) + 500;
-            int y = random.nextInt(300) + 200;
-
-            CoinBlock coinBlock = new CoinBlock(x, 500 - y); //Spaces out the coin blocks every 700 pixels
-            sprites.add(coinBlock);
-        }
+        CoinBlock cb = new CoinBlock(this, x, y, w, h);
+        sprites.add(cb);
     }
 
     private void deleteCoin(Sprite c, int index)
@@ -36,14 +118,19 @@ class Model
             sprites.remove(index);
     }
 
+    int scrollPos()
+    {
+        return sprites.get(0).x - 500;
+    }
+
     void update()
     {
-        for(int i = 0; i < sprites.size(); i++)
+        for(int i = 0; i < sprites.size(); i++) // Not a for each loop since I cannot modify content during iteration
         {
             sprites.get(i).update();
             sprites.get(i).collisionDetection(this, sprites);
 
-            if(sprites.get(i).isCoin())
+            if(sprites.get(i) instanceof Coin)
                 deleteCoin(sprites.get(i),i);
         }
     }
@@ -61,17 +148,17 @@ class Model
 
         for(int i = 0; i < sprites.size(); i++)
         {
-            if(sprites.get(i).isMario())
+            if(sprites.get(i) instanceof Mario)
             {
                 Mario mario = (Mario)sprites.get(i);
                 marioList.add(mario.marshal());
             }
-            else if(sprites.get(i).isBrick()) //Checks the sprite arrayList if the index is a brick
+            else if(sprites.get(i) instanceof Brick) //Checks the sprite arrayList if the index is a brick
             {
                 Brick brick = (Brick)sprites.get(i); //Casts the brick sprite to a brick
                 brickList.add(brick.marshal());
             }
-            else if(sprites.get(i).isCoinBlock())
+            else if(sprites.get(i) instanceof CoinBlock)
             {
                 CoinBlock coinBlock = (CoinBlock)sprites.get(i);
                 coinBlockList.add(coinBlock.marshal());
@@ -89,12 +176,13 @@ class Model
         Json jsonCoinBlockList = ob.get("coinblocks");
 
         for(int i = 0; i < jsonMarioList.size(); i++)
-            sprites.add(new Mario(jsonMarioList.get(i)));
+            sprites.add(new Mario(this, jsonMarioList.get(i)));
 
         for(int i = 0; i <jsonBrickList.size(); i++)
-            sprites.add(new Brick(jsonBrickList.get(i))); //
+            sprites.add(new Brick(this, jsonBrickList.get(i))); //
 
         for(int i = 0; i < jsonCoinBlockList.size(); i++)
-            sprites.add(new CoinBlock(jsonCoinBlockList.get(i)));
+            sprites.add(new CoinBlock(this, jsonCoinBlockList.get(i)));
+        mario = (Mario)sprites.get(0);
     }
 }

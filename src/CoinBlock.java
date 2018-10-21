@@ -8,19 +8,35 @@ public class CoinBlock extends Sprite
     private static BufferedImage coinBlockImage;
     private static BufferedImage coinBlockImageEmpty;
 
-    int coinCounter; //Counts how many times mario has hit the block
+    int coinCounter;
 
-    CoinBlock(int x, int y)
+    CoinBlock(Model model, int x, int y, int w, int h)
     {
-        loadImage();
+        this.model = model;
         this.x = x;
         this.y = y;
-        this.w = 75;
-        this.h = 75;
+        this.w = w;
+        this.h = h;
     }
 
-    CoinBlock(Json ob)
+    CoinBlock(Model m, CoinBlock copyCoinBlock)
     {
+        this.x = copyCoinBlock.x;
+        this.y = copyCoinBlock.y;
+        this.w = copyCoinBlock.w;
+        this.h = copyCoinBlock.h;
+        this.coinCounter = copyCoinBlock.coinCounter;
+        this.model = m;
+    }
+
+    public Sprite clone(Model m, Sprite s)
+    {
+        return (new CoinBlock(m, (CoinBlock)s));
+    }
+
+    CoinBlock(Model model, Json ob)
+    {
+        this.model = model;
         x = (int)ob.getLong("x");
         y = (int)ob.getLong("y");
         w = (int)ob.getLong("w");
@@ -46,10 +62,11 @@ public class CoinBlock extends Sprite
 
     void addCoin(Model m, int x, int y)
     {
-        if(coinCounter < 5) //If mario hits it 5 times, then it will stop generating coins
+        if(this.coinCounter < 5) //If mario hits it 5 times, then it will stop generating coins
         {
+            m.coins++;
             coinCounter++;
-            Coin coin = new Coin(x, y);
+            Coin coin = new Coin(m, x, y);
             m.sprites.add(coin);
         }
     }
@@ -61,29 +78,12 @@ public class CoinBlock extends Sprite
 
     public void draw(Graphics g)
     {
+        loadImage();
         //Picture depends on if the block is empty or not
         if(coinCounter < 5)
-            g.drawImage(coinBlockImage,x - (Mario.scrollPos - 500), y, w, h, null);
+            g.drawImage(coinBlockImage,x - model.scrollPos(), y, w, h, null);
         else
-            g.drawImage(coinBlockImageEmpty,x - (Mario.scrollPos - 500), y, w, h, null);
+            g.drawImage(coinBlockImageEmpty,x - model.scrollPos(), y, w, h, null);
 
-    }
-
-    public boolean isBrick()
-    {
-        return false;
-    }
-
-    public boolean isMario()
-    {
-        return false;
-    }
-
-    public boolean isCoinBlock() {
-        return true;
-    }
-
-    public boolean isCoin() {
-        return false;
     }
 }

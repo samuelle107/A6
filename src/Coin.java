@@ -11,8 +11,9 @@ public class Coin extends Sprite
     private double verticalVelocity;
     private double horizontalVelocity;
 
-    Coin(int x, int y)
+    Coin(Model model, int x, int y)
     {
+        this.model = model;
         this.x = x;
         this.y = y;
         w = 75;
@@ -21,6 +22,15 @@ public class Coin extends Sprite
         Random random = new Random();
         verticalVelocity = -15;
         horizontalVelocity = random.nextInt(10 + 1 + 10) - 10;
+    }
+
+    Coin(Model m, Coin copyCoin)
+    {
+        this.x = copyCoin.x;
+        this.y = copyCoin.y;
+        this.w = copyCoin.w;
+        this.h = copyCoin.h;
+        this.model = m;
     }
 
     private BufferedImage loadImage()
@@ -50,22 +60,12 @@ public class Coin extends Sprite
 
     public void draw(Graphics g)
     {
-        g.drawImage(loadImage(),x - (Mario.scrollPos - 500), y, w, h, null);
+        g.drawImage(loadImage(),x - this.model.scrollPos(), y, w, h, null);
     }
 
-    public boolean isBrick() {
-        return false;
-    }
-
-    public boolean isMario() {
-        return false;
-    }
-
-    public boolean isCoinBlock() {
-        return false;
-    }
-
-    public boolean isCoin() {
-        return true;
+    @Override
+    public Sprite clone(Model m, Sprite s)
+    {
+        return (new Coin(m, (Coin)s));
     }
 }

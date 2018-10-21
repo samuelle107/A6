@@ -7,13 +7,11 @@ abstract public class Sprite
     int y;
     int w;
     int h;
+    Model model;
 
     abstract public void update();
     abstract public void draw(Graphics g);
-    abstract public boolean isBrick();
-    abstract public boolean isMario();
-    abstract public boolean isCoinBlock();
-    abstract public boolean isCoin();
+    abstract public Sprite clone(Model m, Sprite s);
 
     // Marshals this object into a JSON DOM
     Json marshal()
@@ -48,16 +46,16 @@ abstract public class Sprite
         return true;
     }
 
-    private void collisionHandler(Model model, Sprite sprite) // "This" will refer to what ever the sprite is hitting
+    private void collisionHandler(Model mod, Sprite sprite) // "This" will refer to what ever the sprite is hitting
     {
-        if(sprite.isMario() && !this.isCoin())
+        if(sprite instanceof Mario && !(this instanceof Coin))
         {
             Mario m = (Mario)sprite;
 
             if(m.y <= this.y + this.h && m.prevY > this.y + this.h) // Hits bottom
             {
-                if(this.isCoinBlock())
-                    generateCoin(model,this);
+                if(this instanceof CoinBlock)
+                    generateCoin(mod,this);
 
                 m.y = this.y + this.h + 1;
                 m.verticalVelocity = 0;
@@ -65,7 +63,6 @@ abstract public class Sprite
             else if (m.x <= this.x + this.w && m.prevX > this.x + this.w) // Hits right wall
             {
                 m.x = this.x + this.w + 1;
-                Mario.scrollPos = m.x;
             }
             else if(m.y + m.h >= this.y && m.prevY + m.h < this.y) // Lands on top
             {
@@ -77,13 +74,12 @@ abstract public class Sprite
             else if(m.x + m.w >= this.x && m.prevX < this.x) // Hits left wall
             {
                 m.x = this.x - m.w - 1;
-                Mario.scrollPos = m.x;
             }
         }
     }
 
-    private void generateCoin(Model model, Sprite cb)
+    private void generateCoin(Model mod, Sprite cb)
     {
-        ((CoinBlock) cb).addCoin(model, cb.x, cb.y - 75); //adds a coin at the location of the coin block and shifts up
+        ((CoinBlock) cb).addCoin(mod, cb.x, cb.y - 75); //adds a coin at the location of the coin block and shifts up
     }
 }
