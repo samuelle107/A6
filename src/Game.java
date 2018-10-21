@@ -10,7 +10,7 @@ public class Game extends JFrame
     public Game()
     {
         model = new Model(); //Making a new Model object.
-        // Json j = Json.load("maps.json"); model.unMarshal(j); //Loads the game
+        Json j = Json.load("maps.json"); model.unMarshal(j); //Loads the game
         controller = new Controller(model); //Making a new Controller object.
         view = new View(controller, model); //Making a View object and passing in the Controller object, controller.
 

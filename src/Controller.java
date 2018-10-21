@@ -71,34 +71,53 @@ class Controller implements MouseListener, KeyListener
     {
         if(false)
         {
-            // Evaluate each possible action
-            double score_run          = model.evaluateAction(Model.marioActions.RUN, 0);
-            double score_jump         = model.evaluateAction(Model.marioActions.JUMP, 0);
-            double score_wait         = model.evaluateAction(Model.marioActions.WAIT, 0);
-            double score_run_and_jump = model.evaluateAction(Model.marioActions.RUN_AND_JUMP, 0);
+            double runScore = model.evaluateAction(Model.marioActions.RUN, 0);
+            double jumpScore = model.evaluateAction(Model.marioActions.JUMP, 0);
+            double waitScore = model.evaluateAction(Model.marioActions.WAIT, 0);
+            double runAndJumpScore = model.evaluateAction(Model.marioActions.RUN_AND_JUMP, 0);
 
-            System.out.println("r  : " + score_run);
-            System.out.println("j  : " + score_jump);
-//            System.out.println("w  : " + score_wait);
-//            System.out.println("rj : " + score_run_and_jump);
-            System.out.println();
+            System.out.println("r : " + runScore);
+            System.out.println("j : " + jumpScore);
+            System.out.println("w : " + waitScore);
+            System.out.println("rj: " + runAndJumpScore);
 
-//            if(score_run > score_jump && score_run > score_wait && score_run > score_run_and_jump)
-//                model.doAction(Model.marioActions.RUN);
-//            else if(score_jump > score_wait && score_jump > score_run_and_jump)
-//                model.doAction(Model.marioActions.JUMP);
-//            else if(score_wait > score_run_and_jump)
-//                model.doAction(Model.marioActions.WAIT);
-//            else
+            // Run and jump
+            // Jump
+            // Wait
+            // Run
+
+//            if(runAndJumpScore > runScore && runAndJumpScore > jumpScore && runAndJumpScore > waitScore)
+//            {
+//                System.out.println("RUN AND JUMP");
 //                model.doAction(Model.marioActions.RUN_AND_JUMP);
+//            }
+//            else if(waitScore >= runScore && waitScore > jumpScore)
+//            {
+//                System.out.println("WAIT");
+//                model.doAction(Model.marioActions.WAIT);
+//            }
+//            else if(jumpScore > runScore)
+//            {
+//                System.out.println("JUMP");
+//                model.doAction(Model.marioActions.JUMP);
+//            }
+//            else
+//            {
+//                System.out.println("RUN");
+//                model.doAction(Model.marioActions.RUN);
+//            }
 
-            if(score_run > score_jump && score_run > score_run_and_jump)
+            if(runScore > waitScore && runScore > jumpScore)
                 model.doAction(Model.marioActions.RUN);
-            else if(score_run_and_jump > score_jump)
-                model.doAction(Model.marioActions.RUN_AND_JUMP);
+            else if(waitScore > jumpScore)
+                model.doAction(Model.marioActions.WAIT);
             else
                 model.doAction(Model.marioActions.JUMP);
+
+            System.out.println();
+
         }
+        System.out.println(model.coins);
     }
 
     void update() //This function updates every few ms and updates the model's location based on the keypress

@@ -9,7 +9,7 @@ class Model
     ArrayList<Sprite> sprites;
     Mario mario;
 
-    public enum marioActions{ RUN, JUMP, RUN_AND_JUMP, WAIT }
+    public enum marioActions{ RUN, JUMP, RUN_AND_JUMP, WAIT, RUN_BACK }
 
     Model() // Normal constructor
     {
@@ -26,7 +26,6 @@ class Model
         this.sprites = new ArrayList<>();
         for(Sprite s : copyModel.sprites)
             this.sprites.add(s.clone(this, s));
-
         this.mario = (Mario)this.sprites.get(0);
     }
 
@@ -40,9 +39,9 @@ class Model
             return this.mario.x - this.jumpCount + (coins * 100);
 
         // Simulate the action
-        Model copy = new Model(this); // uses the copy constructor
+        Model copy = new Model(this);
         copy.doAction(action);
-        copy.update(); // advance simulated time
+        copy.update();
 
         // Recurse
         if(depth % k != 0)
@@ -59,43 +58,38 @@ class Model
 
     void doAction(marioActions action)
     {
-        switch (action)
+        if(action == marioActions.RUN)
         {
-            case JUMP:
-            {
-                this.mario.jump();
-                this.jumpCount++;
-                break;
-            }
-            case WAIT:
-            {
-                this.mario.isGrounded = true;
-                this.mario.x = this.mario.prevX;
-                break;
-            }
-            case RUN:
-            {
-                if(this.mario.isGrounded)
-                {
-                    this.mario.x += this.mario.marioMovementSpeed;
-                    this.mario.isFacingRight = true;
-                    this.mario.marioImageCycle();
-                }
-                break;
-            }
-            case RUN_AND_JUMP:
-            {
-                this.mario.x += this.mario.marioMovementSpeed;
-                this.mario.jump();
-                this.mario.marioImageCycle();
-                this.jumpCount++;
-                break;
-            }
-            default:
-            {
-                throw new RuntimeException("There are no cases where this should happen");
-            }
-
+            this.mario.isFacingRight = true;
+            this.mario.x += this.mario.marioMovementSpeed;
+            this.mario.marioImageCycle();
+        }
+        else if(action == marioActions.RUN_AND_JUMP)
+        {
+            this.mario.x += this.mario.marioMovementSpeed;
+            this.mario.marioImageCycle();
+            this.mario.jump();
+            this.jumpCount++;
+        }
+        else if(action == marioActions.WAIT)
+        {
+            this.mario.x = this.mario.prevX;
+        }
+        else if(action == marioActions.JUMP)
+        {
+            this.mario.x = this.mario.prevX;
+            this.mario.jump();
+            this.jumpCount++;
+        }
+        else if (action == marioActions.RUN_BACK)
+        {
+            this.mario.isFacingRight = false;
+            this.mario.x -= this.mario.marioMovementSpeed;
+            this.mario.marioImageCycle();
+        }
+        else
+        {
+            throw new RuntimeException("This was not suppose to happen");
         }
     }
 

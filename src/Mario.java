@@ -8,7 +8,7 @@ public class Mario extends Sprite
     int prevX;
     int prevY;
 
-    final int marioMovementSpeed = 10;
+    static int marioMovementSpeed = 10;
     int marioImageIndex; //Integer that keeps track of the current mario sprite
     int marioJumpTime; //Contains how many frames it has been since Mario has been on solid ground
     double verticalVelocity;
@@ -36,7 +36,7 @@ public class Mario extends Sprite
     {
         this.x = copyMario.x;
         this.y = copyMario.y;
-        this.w = copyMario.y;
+        this.w = copyMario.w;
         this.h = copyMario.h;
 
         this.prevX = copyMario.prevX;
@@ -120,18 +120,11 @@ public class Mario extends Sprite
 
     void jump()
     {
+        locationOfMarioPast();
 
-        if(marioJumpTime < 25 && verticalVelocity <=0) //Mario can only stay in the air for so long
-        {
-            if(isGrounded)
-            {
-                if(true)
-                {
-                    locationOfMarioPast();
-                    verticalVelocity = -23;
-                }
-            }
-        }
+        if(isGrounded)
+            if(marioJumpTime < 10)
+                verticalVelocity = -20;
     }
 
     void locationOfMarioPast()
