@@ -121,7 +121,6 @@ public class Mario extends Sprite
     void jump()
     {
         locationOfMarioPast();
-
         if(isGrounded)
             if(marioJumpTime < 10)
                 verticalVelocity = -20;

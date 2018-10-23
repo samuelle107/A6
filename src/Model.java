@@ -9,7 +9,7 @@ class Model
     ArrayList<Sprite> sprites;
     Mario mario;
 
-    public enum marioActions{ RUN, JUMP, RUN_AND_JUMP, WAIT, RUN_BACK }
+    public enum marioActions{ RUN, JUMP, RUN_AND_JUMP, WAIT }
 
     Model() // Normal constructor
     {
@@ -32,11 +32,11 @@ class Model
     double evaluateAction(marioActions action, int depth)
     {
         int d = 20;
-        int k = 7;
+        int k = 6;
 
         // Evaluate the state
         if(depth >= d)
-            return this.mario.x - this.jumpCount + (coins * 100);
+            return (this.mario.x)/mario.marioMovementSpeed - 2 * this.jumpCount + (coins * 1000);
 
         // Simulate the action
         Model copy = new Model(this);
@@ -50,8 +50,8 @@ class Model
         {
             double best = copy.evaluateAction(marioActions.RUN, depth + 1);
             best = Math.max(best, copy.evaluateAction(marioActions.JUMP, depth + 1));
-            best = Math.max(best, copy.evaluateAction(marioActions.WAIT, depth + 1));
             best = Math.max(best, copy.evaluateAction(marioActions.RUN_AND_JUMP, depth + 1));
+            best = Math.max(best, copy.evaluateAction(marioActions.WAIT, depth + 1));
             return best;
         }
     }
@@ -60,36 +60,24 @@ class Model
     {
         if(action == marioActions.RUN)
         {
-            this.mario.isFacingRight = true;
-            this.mario.x += this.mario.marioMovementSpeed;
-            this.mario.marioImageCycle();
-        }
-        else if(action == marioActions.RUN_AND_JUMP)
-        {
-            this.mario.x += this.mario.marioMovementSpeed;
-            this.mario.marioImageCycle();
-            this.mario.jump();
-            this.jumpCount++;
-        }
-        else if(action == marioActions.WAIT)
-        {
-            this.mario.x = this.mario.prevX;
+            mario.x += mario.marioMovementSpeed;
+            mario.marioImageCycle();
         }
         else if(action == marioActions.JUMP)
         {
-            this.mario.x = this.mario.prevX;
-            this.mario.jump();
-            this.jumpCount++;
+            mario.jump();
+            jumpCount++;
         }
-        else if (action == marioActions.RUN_BACK)
+        else if(action == marioActions.WAIT)
         {
-            this.mario.isFacingRight = false;
-            this.mario.x -= this.mario.marioMovementSpeed;
-            this.mario.marioImageCycle();
+
         }
-        else
+        else if(action == marioActions.RUN_AND_JUMP)
         {
-            throw new RuntimeException("This was not suppose to happen");
+            mario.jump();
+            jumpCount++;
+            mario.x += mario.marioMovementSpeed;
+            mario.marioImageCycle();
         }
     }
 
